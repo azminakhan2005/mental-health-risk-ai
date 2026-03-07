@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="auth-bg">
+    <div class="blur-shape shape1"></div>
+    <div class="blur-shape shape2"></div>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Create Account</h2>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+
+            <input type="text" name="name"
+                   placeholder="Full Name"
+                   required minlength="3">
+
+            <input type="email" name="email"
+                   placeholder="Email"
+                   required
+                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+
+            <input type="password" name="password"
+                   placeholder="Password"
+                   required minlength="6">
+
+            <button class="primary-btn" type="submit">Register</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

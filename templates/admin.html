@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>Admin Dashboard</h2>
+<div class="navbar">
+    <div class="logo">MindGuard AI</div>
+
+    {% if session.get('email') %}
+        <div>
+            <span class="username">{{ session.get('email') }}</span>
+            <a href="/logout" class="btn-outline">Logout</a>
+        </div>
+    {% else %}
+        <div>
+            <a href="/login" class="btn-outline">Login</a>
+            <a href="/register" class="btn-primary">Register</a>
+        </div>
+    {% endif %}
+</div>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Journal</th>
+        <th>Emotion</th>
+        <th>Risk</th>
+    </tr>
+
+    {% for entry in entries %}
+    <tr>
+        <td>{{ entry.email }}</td>
+        <td>{{ entry.text }}</td>
+        <td>{{ entry.emotion.label }}</td>
+        <td>{{ entry.risk }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

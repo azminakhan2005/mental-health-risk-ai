@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mental Health Risk AI</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="auth-bg">
+
+<div class="blur-shape shape1"></div>
+<div class="blur-shape shape2"></div>
+
+<div class="navbar dashboard-navbar">
+<div class="logo">MindGuard AI</div>
+<a href="/logout" class="btn-outline">Logout</a>
+</div>
+
+<div class="dashboard-wrapper">
+
+<!-- JOURNAL INPUT -->
+
+<div class="journal-card">
+
+<h2>How are you feeling today?</h2>
+
+<form method="POST">
+
+<textarea name="journal"
+placeholder="Write your thoughts here..."
+required>{{ journal or "" }}</textarea>
+
+<button class="btn-primary">Analyze</button>
+
+</form>
+
+</div>
+
+{% if risk %}
+
+<!-- RISK CARDS -->
+
+<div class="result-section">
+
+<div class="result-card">
+
+<h3>Detected Emotion</h3>
+<p>{{ emotion }}</p>
+
+</div>
+
+<div class="result-card">
+
+<h3>Current Risk</h3>
+<p class="risk-number">{{ "%.2f"|format(risk) }}</p>
+
+</div>
+
+<div class="result-card">
+
+<h3>Today's Avg Risk</h3>
+<p class="risk-number">{{ "%.2f"|format(daily_risk) }}</p>
+
+</div>
+
+</div>
+
+<!-- SUGGESTIONS -->
+
+<div class="suggestion-card">
+
+<h3>AI Suggestions</h3>
+
+<ul>
+
+{% if support %}
+
+{% for tip in support %}
+<li>{{ tip }}</li>
+{% endfor %}
+
+{% else %}
+
+<li>You're doing well today. Keep maintaining healthy habits.</li>
+
+{% endif %}
+
+</ul>
+
+</div>
+
+<!-- GRAPH -->
+
+<div class="graph-card">
+
+<h3>Risk Trend</h3>
+
+<img src="{{ url_for('risk_graph') }}">
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<!-- HISTORY PANEL -->
+
+<div class="history-panel">
+
+<h3>Recent Entries</h3>
+
+{% for entry in history %}
+
+<a href="/dashboard?entry={{ entry._id }}" class="history-item">
+
+<div class="history-date">
+
+{% if entry.get('date') %}
+{{ entry['date'].strftime("%d %b %H:%M") }}
+{% else %}
+No date
+{% endif %}
+
+</div>
+
+<div class="history-text">
+
+{{ entry.text[:40] }}...
+
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+<!-- CHATBOT -->
+
+<div class="chat-circle" onclick="toggleChat()">
+💬
+</div>
+
+<div id="chatBox" class="chat-box">
+
+<div class="chat-header">
+AI Support
+</div>
+
+<div id="chatMessages"></div>
+
+<div class="chat-input-area">
+
+<input id="chatInput" placeholder="Type message..." />
+
+<button onclick="sendMessage()">Send</button>
+
+</div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
