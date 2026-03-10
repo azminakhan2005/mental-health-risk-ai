@@ -1,22 +1,23 @@
 from models.risk_predictor import predict_risk
-from models.suggestions import generate_suggestions
-
-daily_risks = []
+from models.trend_analyzer import update_risk
+from models.suggestion_engine import generate_suggestions
 
 def analyze_text(text):
+    # predict_risk now returns risk, emotions dict, and mood/crisis info
+    risk, emotions= predict_risk(text)
+    final_risk = update_risk(risk)
+    suggestions = generate_suggestions(emotions, final_risk)
 
-    risk, emotions = predict_risk(text)
 
-    daily_risks.append(risk)
-
-    avg_risk = sum(daily_risks) / len(daily_risks)
-
-    # generate suggestions
-    suggestions = generate_suggestions(emotions, risk)
+    # dominant emotion for display
+    if "CRISIS" in emotions:
+        dominant_emotion = "CRISIS"
+    else:
+        dominant_emotion = max(emotions, key=emotions.get)
 
     return {
-
-        "emotion_scores": emotions,
-        "risk": risk,
-        "daily_risk": avg_risk,
-        "suggestions": suggestions}
+        "risk": round(final_risk, 3),
+        "emotions": emotions,
+        "emotion": dominant_emotion,
+        "suggestions": suggestions
+    }

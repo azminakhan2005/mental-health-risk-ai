@@ -46,26 +46,38 @@ required>{{ journal or "" }}</textarea>
 <div class="result-section">
 
 <div class="result-card">
-
-<h3>Detected Emotion</h3>
-<p>{{ emotion }}</p>
-
+    <h3>Detected Emotion</h3>
+    <p id="detectedEmotion">{{ emotion }}</p>
 </div>
 
 <div class="result-card">
+    <h3>Current Risk</h3>
 
-<h3>Current Risk</h3>
-<p class="risk-number">{{ "%.2f"|format(risk) }}</p>
+    <!-- Risk Number -->
+    <p class="risk-number"
+       {% if risk < 0.4 %} style="color:green;"
+       {% elif risk < 0.7 %} style="color:orange;"
+       {% else %} style="color:red;" {% endif %}>
+       {{ "%.2f"|format(risk) }}
+    </p>
+
+    <!-- Risk Level Text -->
+    <p class="risk-level" font-size="10px"
+       {% if risk < 0.4 %} style="color:green;"
+       {% elif risk < 0.7 %} style="color:orange;"
+       {% else %} style="color:red;" {% endif %}>
+       
+       {% if risk < 0.4 %}
+           Low Risk
+       {% elif risk < 0.7 %}
+           Moderate Risk
+       {% else %}
+           High Risk
+       {% endif %}
+
+    </p>
 
 </div>
-
-<div class="result-card">
-
-<h3>Today's Avg Risk</h3>
-<p class="risk-number">{{ "%.2f"|format(daily_risk) }}</p>
-
-</div>
-
 </div>
 
 <!-- SUGGESTIONS -->
@@ -84,13 +96,14 @@ required>{{ journal or "" }}</textarea>
 
 {% else %}
 
-<li>You're doing well today. Keep maintaining healthy habits.</li>
+<li>Do things that make you happy and maintain a positive routine.</li>
 
 {% endif %}
 
 </ul>
 
 </div>
+
 
 <!-- GRAPH -->
 
@@ -107,6 +120,7 @@ required>{{ journal or "" }}</textarea>
 </div>
 
 </div>
+
 
 <!-- HISTORY PANEL -->
 
@@ -140,6 +154,7 @@ No date
 
 </div>
 
+
 <!-- CHATBOT -->
 
 <div class="chat-circle" onclick="toggleChat()">
@@ -163,6 +178,26 @@ AI Support
 </div>
 
 </div>
+
+<!--CRISIS ALERT-->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the detected emotion from the page
+    const emotionElem = document.getElementById("detectedEmotion");
+    if (emotionElem) {
+        const emotion = emotionElem.textContent.trim().toUpperCase();
+        
+        // If crisis detected, show popup
+        if (emotion === "CRISIS") {
+            alert("⚠️ Crisis detected! Your risk level is very high.\nPlease reach out immediately for help:\nHelpline: 1800-599-0019 (Kiran Mental Health Helpline (Govt. of India))");
+
+            // Optionally, scroll to the suggestions section
+            const suggestionsCard = document.querySelector(".suggestion-card");
+            if(suggestionsCard) suggestionsCard.scrollIntoView({behavior: "smooth"});
+        }
+    }
+});
+</script>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 

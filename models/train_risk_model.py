@@ -1,27 +1,21 @@
 import pandas as pd
+import os
 from sklearn.linear_model import LogisticRegression
 import joblib
 
-# Example training dataset
-data = {
-    "sadness":[0.8,0.7,0.1,0.2],
-    "anger":[0.1,0.2,0.1,0.0],
-    "fear":[0.4,0.5,0.1,0.0],
-    "joy":[0.1,0.0,0.7,0.8],
-    "love":[0.0,0.1,0.4,0.5],
-    "surprise":[0.0,0.0,0.1,0.2],
-    "risk":[1,1,0,0]
-}
+# Load dataset
+df = pd.read_csv("data/risk_training.tsv", sep="\t")
 
-df = pd.DataFrame(data)
-
-X = df.drop("risk",axis=1)
+# Features & target
+X = df.drop("risk", axis=1)
 y = df["risk"]
 
-model = LogisticRegression()
+# Train Logistic Regression
+model = LogisticRegression(max_iter=1000)
+model.fit(X, y)
 
-model.fit(X,y)
+# Save model
+os.makedirs("models", exist_ok=True)
+joblib.dump(model, "models/risk_model.pkl")
 
-joblib.dump(model,"models/risk_model.pkl")
-
-print("Risk model trained")
+print("Risk model trained successfully")
