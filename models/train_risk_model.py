@@ -10,8 +10,7 @@ df = pd.read_csv("data/risk_training.tsv", sep="\t")
 X = df.drop("risk", axis=1)
 y = df["risk"]
 
-# Train Logistic Regression
-model = LogisticRegression(max_iter=1000)
+model = LogisticRegression(max_iter=2000)
 model.fit(X, y)
 
 # Save model

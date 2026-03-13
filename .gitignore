@@ -3,26 +3,26 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Environment variables
+.env
+
 # Virtual environments
 venv/
 env/
 
 # Model files
-models/*.pkl
+*.pkl
 
-# OS junk files
+# Large datasets
+data/*.csv
+
+# Generated files
+risk_history.json
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# VSCode settings
+# IDE
 .vscode/
-
-# Environment secrets
-.env
-
-# JetBrains / PyCharm project files
-*.iml
 .idea/
-
-# Logs
-*.log

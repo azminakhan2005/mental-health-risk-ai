@@ -26,24 +26,18 @@ NEGATIVE = [
 ]
 
 def predict_risk(text):
-    """
-    Returns:
-        risk: float [0-1]
-        emotions: dict of emotion scores (+ CRISIS if detected)
-    """
 
-    # Extract emotions from text
     emotions = extract_features(text)
 
-    # Crisis detection override
+    # Crisis override
     if detect_crisis(text):
         emotions = {k: 0 for k in EMOTIONS}
         emotions["CRISIS"] = 1.0
         return 1.0, emotions
 
-    # Weighted adjustment based on positive vs negative emotions
-    pos_score = sum([emotions.get(e, 0) for e in POSITIVE])
-    neg_score = sum([emotions.get(e, 0) for e in NEGATIVE])
+    # Emotion balance
+    pos_score = sum(emotions.get(e, 0) for e in POSITIVE)
+    neg_score = sum(emotions.get(e, 0) for e in NEGATIVE)
 
     total = pos_score + neg_score
     if total > 0:
@@ -53,20 +47,26 @@ def predict_risk(text):
         pos_norm = 0
         neg_norm = 0
 
-    # Feature vector for ML model
+    # ML feature vector
     X = np.array([[emotions.get(k, 0) for k in EMOTIONS]])
 
-    # Predict base probability
-    base_prob = model.predict_proba(X)[0][1]
+    # Predict class
+    risk_class = model.predict(X)[0]
 
-    # Adjust risk based on positive/negative balance
-    # Negatives increase risk, positives reduce it slightly
-    risk = base_prob * (1 + 0.2*neg_norm - 0.2*pos_norm)
+    # Convert class → risk score
+    risk_map = {
+        0: 0.2,   # positive / neutral
+        1: 0.4,   # mild distress
+        2: 0.6,   # moderate distress
+        3: 0.85   # severe distress
+    }
+
+    risk = risk_map.get(risk_class, 0.4)
+
+    # Small adjustment from emotion balance
+    risk += (0.08 * neg_norm - 0.10 * pos_norm)
 
     # Clamp between 0 and 1
-    risk = min(max(round(risk, 2), 0), 1)
-
-    # Avoid too-low predictions
-    risk = max(risk, 0.1)
+    risk = max(0, min(1, risk))
 
     return risk, emotions
